@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   useTable,
   //UseSortByHooks,
@@ -10,6 +10,7 @@ import {
 import MOCK_DATA from "./MOCK_DATA.json";
 import { COLUMNS } from "./Columns";
 import "./table.css";
+import Search from "./Search";
 
 export const FilteringTable = () => {
   const columns = useMemo(() => COLUMNS, []);
@@ -45,10 +46,16 @@ export const FilteringTable = () => {
   } = tableInstance;
 
   const { pageIndex, pageSize } = state;
+  const [showSearch, setShowSearch] = useState(false);
 
   return (
     <>
-      <div>Date Range Picker</div>
+      <div>
+        {showSearch && <Search />}
+        <button onClick={() => setShowSearch(!showSearch)}>
+          {showSearch ? "Hide" : "Search Dates"}
+        </button>
+      </div>
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup) => (
@@ -57,10 +64,12 @@ export const FilteringTable = () => {
                 <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                   {column.render("Header")}
                   <span>
-                    {column.isSorted
-                      ? column.isSortedDesc
-                        ? " 🔽"
-                        : " 🔼"
+                    {column.disableSorting
+                      ? column.isSorted
+                        ? column.isSortedDesc
+                          ? " 🔽"
+                          : " 🔼"
+                        : ""
                       : ""}
                   </span>
                   <div>{column.canFilter ? column.render("Filter") : null}</div>
